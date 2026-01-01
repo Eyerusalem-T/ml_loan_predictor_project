@@ -5,8 +5,8 @@ import numpy as np
 
 app = FastAPI()
 
-# Enable CORS
-origins = ["*"]  # allow all origins
+# CORS setup (allow all origins)
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -16,9 +16,9 @@ app.add_middleware(
 )
 
 # Load trained models
-log_model = joblib.load("../models/logistic_model.joblib")
-dt_model = joblib.load("../models/decision_tree_model.joblib")
-scaler = joblib.load("../models/scaler.joblib")
+log_model = joblib.load("models/logistic_model.joblib")
+dt_model = joblib.load("models/decision_tree_model.joblib")
+scaler = joblib.load("models/scaler.joblib")
 
 @app.get("/")
 def home():
@@ -26,6 +26,7 @@ def home():
 
 @app.post("/predict")
 def predict_loan(data: dict, model_type: str = "logistic"):
+    # Input features
     features = np.array([[
         data["Gender"],
         data["Married"],
@@ -42,6 +43,7 @@ def predict_loan(data: dict, model_type: str = "logistic"):
 
     features_scaled = scaler.transform(features)
 
+    # Choose model
     if model_type == "decision_tree":
         prediction = dt_model.predict(features)
     else:
