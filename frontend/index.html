@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Loan Prediction App</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+      }
+
+      .container {
+        width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 6px;
+        margin-top: 4px;
+      }
+
+      button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      .result {
+        margin-top: 15px;
+        font-weight: bold;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Loan Prediction</h2>
+
+      <label>Gender</label>
+      <select id="gender">
+        <option value="1">Male</option>
+        <option value="0">Female</option>
+      </select>
+
+      <label>Married</label>
+      <select id="married">
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+      </select>
+
+      <label>Dependents</label>
+      <input type="number" id="dependents" value="0" />
+
+      <label>Education</label>
+      <select id="education">
+        <option value="1">Graduate</option>
+        <option value="0">Not Graduate</option>
+      </select>
+
+      <label>Self Employed</label>
+      <select id="self_employed">
+        <option value="1">Yes</option>
+        <option value="0">No</option>
+      </select>
+
+      <label>Applicant Income</label>
+      <input type="number" id="app_income" value="5000" />
+
+      <label>Coapplicant Income</label>
+      <input type="number" id="co_income" value="0" />
+
+      <label>Loan Amount</label>
+      <input type="number" id="loan_amount" value="150" />
+
+      <label>Loan Term</label>
+      <input type="number" id="loan_term" value="360" />
+
+      <label>Credit History</label>
+      <select id="credit">
+        <option value="1">Good</option>
+        <option value="0">Bad</option>
+      </select>
+
+      <label>Property Area</label>
+
+      <select id="property">
+        <option value="2">Urban</option>
+        <option value="1">Semiurban</option>
+        <option value="0">Rural</option>
+      </select>
+      <label>Select Model</label>
+      <select id="model_type">
+        <option value="logistic">Logistic Regression</option>
+        <option value="decision_tree">Decision Tree</option>
+      </select>
+
+      <button onclick="predictLoan()">Predict</button>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <script>
+      function predictLoan() {
+        const data = {
+          Gender: Number(document.getElementById("gender").value),
+          Married: Number(document.getElementById("married").value),
+          Dependents: Number(document.getElementById("dependents").value),
+          Education: Number(document.getElementById("education").value),
+          Self_Employed: Number(document.getElementById("self_employed").value),
+          ApplicantIncome: Number(document.getElementById("app_income").value),
+          CoapplicantIncome: Number(document.getElementById("co_income").value),
+          LoanAmount: Number(document.getElementById("loan_amount").value),
+          Loan_Amount_Term: Number(document.getElementById("loan_term").value),
+          Credit_History: Number(document.getElementById("credit").value),
+          Property_Area: Number(document.getElementById("property").value),
+        };
+
+        const model_type = document.getElementById("model_type").value;
+        fetch(
+          `https://loan-predictor-backend.onrender.com/predict?model_type=${model_type}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            document.getElementById("result").innerText =
+              "Loan Approved: " +
+              result.loan_approved +
+              " (Model: " +
+              model_type +
+              ")";
+          })
+          .catch((error) => {
+            document.getElementById("result").innerText =
+              "Error connecting to server";
+          });
+      }
+    </script>
+  </body>
+</html>
